@@ -13,11 +13,19 @@ Link multiple network sites/blogs together - Maintain only one site list of user
 
 'User Upgrade Capability' is a plugin to help with a multi-site network and helps with the administration of users and their roles. When you start using a multi-site WordPress installation you soon realise the power of having the ability to use a separate site for different functions (e.g. main site, separate blog, separate calendar …etc) each can then be handled separately and even with different themes.
 
-However, without 'User Upgrade Capabilities' you would need to maintain the user access on each site, this is an overhead for administrators since for each site Admins will need to grant access and add/remove capabilties/roles as required, which all takes time.  'User Upgrade Capability' helps with this admin task and allows you to create a new site and point back to a master reference site re-using its user listing and capabilties/roles to define access permissions for the new linked site.
+However, without 'User Upgrade Capabilities' you would need to maintain the user access on each site, this is an overhead for administrators since for each site Admins will need to grant access and add/remove capabilties & roles as required, which all takes time.  'User Upgrade Capability' helps with this admin task and allows you to create a new site and point back to a master reference site re-using its user listing and capabilties/roles to define access permissions for the new linked site.
 
 One example of where this approach is helpful is for the case where you want multiple calendars for different purposes on the same Wordpress site.  Calendar plugins generally use a fixed database table name, this means that you can't install two calendars on the same site.  With 'User Upgrade Capability' you can create a new site for each calendar and point back to the reference site re-using its user base and capabilties.  The end user doesn't even know that the calendars are on a different site.
 
-You can find more detail on the plugin at the [Plugin site](http://justinandco.com/plugins/user-upgrade-capabilities/).
+
+= Plugin site =
+
+http://justinandco.com/plugins/user-upgrade-capabilities/
+
+= GitHub =
+
+https://github.com/justinticktock/user-upgrade-capability
+
 
 = WARNING = Activating this plugin on a site will replace the available user roles/capabilities with a copy from the reference site you will not be able to undo.
 
