@@ -1,0 +1,483 @@
+# Copyright (C) 2015 User Upgrade Capability
+# This file is distributed under the same license as the User Upgrade Capability package.
+msgid ""
+msgstr ""
+"Project-Id-Version: User Upgrade Capability 1.4\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/user-upgrade-"
+"capability\n"
+"POT-Creation-Date: 2015-10-22 15:58:12+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: includes/class-tabbed-settings.php:314
+msgctxt "text for no page selected"
+msgid "- None -"
+msgstr ""
+
+#: includes/class-tabbed-settings.php:351
+msgid "Enable to prompt installation and force active."
+msgstr ""
+
+#: includes/class-tabbed-settings.php:353
+msgctxt "Install the Plugin"
+msgid "Install"
+msgstr ""
+
+#: includes/class-tabbed-settings.php:357
+#: includes/class-tabbed-settings.php:362
+msgid "Force Active"
+msgstr ""
+
+#: includes/class-tabbed-settings.php:359
+msgctxt "deactivate the plugin"
+msgid "Deactivate"
+msgstr ""
+
+#: includes/class-tabbed-settings.php:364
+msgid "wordpress.org"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:161 includes/plugin-install.php:24
+msgid "Install Required Plugins"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:162 includes/plugin-install.php:25
+msgid "Install Plugins"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:163 includes/plugin-install.php:26
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:164
+msgid "Something went wrong."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:165 includes/plugin-install.php:28
+msgid "This theme requires the following plugin: %1$s."
+msgid_plural "This theme requires the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:166 includes/plugin-install.php:29
+msgid "This theme recommends the following plugin: %1$s."
+msgid_plural "This theme recommends the following plugins: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:167 includes/plugin-install.php:30
+msgid ""
+"Sorry, but you do not have the correct permissions to install the %s plugin. "
+"Contact the administrator of this site for help on getting the plugin "
+"installed."
+msgid_plural ""
+"Sorry, but you do not have the correct permissions to install the %s "
+"plugins. Contact the administrator of this site for help on getting the "
+"plugins installed."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:168 includes/plugin-install.php:31
+msgid "The following required plugin is currently inactive: %1$s."
+msgid_plural "The following required plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:169 includes/plugin-install.php:32
+msgid "The following recommended plugin is currently inactive: %1$s."
+msgid_plural "The following recommended plugins are currently inactive: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:170 includes/plugin-install.php:33
+msgid ""
+"Sorry, but you do not have the correct permissions to activate the %s "
+"plugin. Contact the administrator of this site for help on getting the "
+"plugin activated."
+msgid_plural ""
+"Sorry, but you do not have the correct permissions to activate the %s "
+"plugins. Contact the administrator of this site for help on getting the "
+"plugins activated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:171 includes/plugin-install.php:34
+msgid ""
+"The following plugin needs to be updated to its latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgid_plural ""
+"The following plugins need to be updated to their latest version to ensure "
+"maximum compatibility with this theme: %1$s."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:172 includes/plugin-install.php:35
+msgid ""
+"Sorry, but you do not have the correct permissions to update the %s plugin. "
+"Contact the administrator of this site for help on getting the plugin "
+"updated."
+msgid_plural ""
+"Sorry, but you do not have the correct permissions to update the %s plugins. "
+"Contact the administrator of this site for help on getting the plugins "
+"updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:173 includes/plugin-install.php:36
+msgid "Begin installing plugin"
+msgid_plural "Begin installing plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:174 includes/plugin-install.php:37
+msgid "Begin activating plugin"
+msgid_plural "Begin activating plugins"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-tgm-plugin-activation.php:175 includes/plugin-install.php:38
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:176 includes/plugin-install.php:39
+msgid "Return to the dashboard"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:177
+#: includes/class-tgm-plugin-activation.php:1945
+#: includes/plugin-install.php:40
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:178
+#: includes/class-tgm-plugin-activation.php:1636
+#: includes/plugin-install.php:41
+msgid "The following plugin was activated successfully:"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:179
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:180 includes/plugin-install.php:43
+msgid "Dismiss this notice"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:534
+#: includes/class-tgm-plugin-activation.php:2162
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1169
+msgid "Private Repository"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1172
+msgid "Pre-Packaged"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1177
+msgid "WordPress Repository"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1180
+msgid "Required"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1180
+msgid "Recommended"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1183
+msgid "Not Installed"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1185
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1290
+#: includes/class-tgm-plugin-activation.php:1398
+msgid "Install"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1312
+#: includes/class-tgm-plugin-activation.php:1399
+msgid "Activate"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1361
+msgid ""
+"No plugins to install or activate. <a href=\"%1$s\" title=\"Return to the "
+"Dashboard\">Return to the Dashboard</a>"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1377
+msgid "Plugin"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1378
+msgid "Source"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1379
+msgid "Type"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1380
+msgid "Status"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1928
+msgid "Install package not available."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1929
+msgid "Downloading install package from <span class=\"code\">%s</span>&#8230;"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1930
+msgid "Unpacking the package&#8230;"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1931
+msgid "Installing the plugin&#8230;"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1932
+msgid "Plugin install failed."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1933
+msgid "Plugin installed successfully."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:1944
+msgid "Plugin activation failed."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2058
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2059
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2059
+#: includes/class-tgm-plugin-activation.php:2068
+msgid "Show Details"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2059
+#: includes/class-tgm-plugin-activation.php:2068
+msgid "Hide Details"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2060
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2061
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2065
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2066
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2067
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2068
+msgid "%1$s installed successfully."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2069
+msgid "All installations have been completed."
+msgstr ""
+
+#: includes/class-tgm-plugin-activation.php:2070
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: includes/class-user-upgrade-capability-network-info.php:76
+msgid "Manage User Upgrade Capability on"
+msgstr ""
+
+#: includes/class-user-upgrade-capability-network-info.php:91
+msgid "UUC Linked Sites"
+msgstr ""
+
+#: includes/class-user-upgrade-capability-network-info.php:91
+msgid "Upgrade User Capability - Linked Secondary Sites"
+msgstr ""
+
+#: includes/plugin-install.php:27
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: includes/plugin-install.php:42
+msgid "All plugins installed and activated successfully. %s"
+msgstr ""
+
+#: includes/settings.php:11
+msgid "Settings"
+msgstr ""
+
+#: includes/settings.php:55
+msgid "Upgrade User Capability"
+msgstr ""
+
+#: includes/settings.php:55
+msgid "Upgrade Capability"
+msgstr ""
+
+#: includes/settings.php:80
+msgid "General"
+msgstr ""
+
+#: includes/settings.php:81
+msgid ""
+"The \"User Upgrade Capability\" plugin simplifies the administration of user "
+"capabilities and allows several sites/blogs to have access rights cascaded "
+"out from one reference site."
+msgstr ""
+
+#: includes/settings.php:86
+msgid "Reference Site"
+msgstr ""
+
+#: includes/settings.php:87
+msgid ""
+"WARNING !! changing this setting will replace this site available roles/"
+"capabilities from the reference site selected YOU CANNOT UNDO.  Only change "
+"this option on new sites or when you wish to do so.  (If left as \"-none-\" "
+"this plugin will be disabled)."
+msgstr ""
+
+#: includes/settings.php:93
+msgid "Reference Site Key Capability"
+msgstr ""
+
+#: includes/settings.php:94
+msgid ""
+"If left blank the site name will be used to search for as the capability on "
+"the reference site."
+msgstr ""
+
+#: includes/settings.php:100
+msgid "User Capability"
+msgstr ""
+
+#: includes/settings.php:101
+msgid ""
+"Define here the capabilities that a user will receive for this site if they "
+"already have a single \"key\" capability on a reference site/blog within the "
+"multi-site network.  On user login to the current local site the plugin will "
+"expand the local capabilities to include those listed below. If the \"key\" "
+"reference capability is removed from the user at the reference site then all "
+"capabilities will be removed from this site the user will need to re-enrole."
+msgstr ""
+
+#: includes/settings.php:108
+msgid "Local site Additional Capabilities"
+msgstr ""
+
+#: includes/settings.php:109
+msgid "Put each capability on a separate row."
+msgstr ""
+
+#: includes/settings.php:116
+msgid "Plugin Suggestions"
+msgstr ""
+
+#: includes/settings.php:117
+msgid ""
+"Most Plugins listed here are intended for use with the \"Upgrade Use "
+"Capability\" plugin.  Selection of a plugin will prompt you through the "
+"installation and the plugin will be forced network active while this is "
+"selected; deselecting will not remove the plugin, you will need to manually "
+"deactiate and uninstall from the network."
+msgstr ""
+
+#: includes/settings.php:123
+msgid ""
+"This plugin gives the ability to edit users capabilities.  Once installed go "
+"to menu [users]..[User Role Editor]."
+msgstr ""
+
+#: includes/settings.php:136
+msgid ""
+"This plugin allows for users to auto en-role on sites.  Once installed go to "
+"menu [users]..[Join My Multisite]."
+msgstr ""
+
+#: includes/settings.php:150
+msgid ""
+"This is optional and is very helpful in the creation of new sites by simply "
+"copying an existing site, you can then create template sites for re-use.  "
+"Once installed go to the main Network..[sites]...[Blog Copier]"
+msgstr ""
+
+#: includes/settings.php:212
+msgctxt "text for no site selected"
+msgid "- None -"
+msgstr ""
+
+#: user-upgrade-capability.php:306
+msgid "User Upgrade Capability Settings!"
+msgstr ""
+
+#: user-upgrade-capability.php:348
+msgid ""
+"You've been using <b>Upgrade User Capability</b> for more than %s.  How "
+"about giving it a review by logging in at wordpress.org ?"
+msgstr ""
+
+#: user-upgrade-capability.php:353
+msgid "Yes, please take me there."
+msgstr ""
+
+#: user-upgrade-capability.php:355
+msgid "Not right now thanks."
+msgstr ""
+
+#: user-upgrade-capability.php:359
+msgid "I've already done this !"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "User Upgrade Capability"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://justinandco.com/plugins/user-upgrade-capabilities/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Link multiple network sites/blogs together - Maintain only one site list of "
+"users."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Justin Fletcher"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://justinandco.com"
+msgstr ""
