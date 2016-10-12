@@ -480,7 +480,7 @@ class UUC {
                 $current_site = get_current_blog_id();
 
                 if ( ! $primary_ref_site 
-                     || ! current_user_can( 'manage_options' )
+                   //  || ! current_user_can( 'manage_options' )
                      || ! is_multisite()
                      || $current_site == $primary_ref_site
                      || ! current_user_can_for_blog( $primary_ref_site, 'read' ) 
@@ -498,20 +498,22 @@ class UUC {
         }
         
         public function override_user_caps( ) {
-      
-
+ return;            
+                $user = wp_get_current_user( );
                 
-                if(    ! is_user_logged_in( ) 
+                if( ! $user->exists( )
                     && ! $this->is_login_page()
                   ) {
                         auth_redirect();
-                }
+                  }
+                  
+                if( $this->is_login_page( ) ) {
+                        return;
+                  }
 
-                $user = wp_get_current_user( );
-               
                 $user_transient_name =  'uuc_user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
-
+$transient = false; 
                 // drop out here until the transient expires
                 if( ! empty( $transient ) ) {
                         return ;
@@ -528,16 +530,16 @@ class UUC {
                     // drop out and do nothing
                     return;
                 }
+
                 // add user to site to start with this will get cleaned up with the next two lines
-                add_user_to_blog( $current_site, $user->ID, 'subscriber');
-                
-                
-                $this->override_wp_user_caps( $primary_ref_site, $user);
+            //    add_user_to_blog( $current_site, $user->ID, 'subscriber');
+
+                $this->override_wp_user_caps( $primary_ref_site, $user );
                 $this->override_wp_user_roles( $primary_ref_site, $user );
 
-                if( ! is_user_member_of_blog( ) ) {
-                        add_user_to_blog( get_current_blog_id( ), $user->ID, '' );
-                }
+              //  if( ! is_user_member_of_blog( ) ) {
+             //           add_user_to_blog( get_current_blog_id( ), $user->ID, 'subscriber' );
+              //  }
             
                 // if no cababilities assigned to the user after all overrides from 
                 // the primary ref site clean all and dropout
@@ -546,7 +548,7 @@ class UUC {
                 }
                 
                 // Set the user transient limit to 10 sec minumum overwrite interval          
-                $delay_time = max( get_option( 'uuc_delay_check' ) * MINUTE_IN_SECONDS, 10 )  ;
+                $delay_time = max( get_option( 'uuc_delay_check' ) * MINUTE_IN_SECONDS, 10 )  ;           
                 set_transient( $user_transient_name, true, $delay_time );
                         
         }
@@ -566,7 +568,7 @@ class UUC {
                 switch_to_blog( $primary_ref_site );
                 global $table_prefix;
                 $primary_ref_site_table_prefix = $table_prefix;
-                restore_current_blog();
+                restore_current_blog( );
 
                 global $table_prefix;
 
@@ -578,11 +580,11 @@ class UUC {
                 // Update the current local site defined roles to match
                 update_option( $table_prefix . 'user_roles', $blog_wp_user_roles );   
 
-                // Get rid of any bogus roles
+                // Get rid of any bogus roles keys
                 $uuc_key_caps = array_filter( ( array ) get_option( 'uuc_key_caps' ) );
  
                 // collect the user roles uuc is to add to the local site
-                $new_caps = array();
+                $new_caps = array( );
 
                 foreach( $uuc_key_caps as $key_cap ) {
 
@@ -597,7 +599,7 @@ class UUC {
                     
                 if ( $new_caps ) {
 
-                        // Make sure that we don't call $user->add_role() any more than it's necessary
+                        // Make sure that we don't call $user->add_cap() any more than it's necessary
                         $_new_caps = array_diff( $new_caps, $user_caps );	
                         foreach ( $_new_caps as $_cap ) {
                                 $user->add_cap( $_cap );
@@ -605,14 +607,15 @@ class UUC {
 
                 }                
 
-                //Filter out caps that are role names and assign to $caps_to_remove
+                //Filter out caps that are role names and assign remainder to $caps_to_remove
                 $wp_roles = wp_roles();
                 $caps_to_remove = array_diff( $user_caps, $new_caps );
                 $roles_in_cap_array = array_filter( $caps_to_remove, array( $wp_roles, 'is_role' ) );
+//die(var_dump($roles_in_cap_array));               
                 $caps_to_remove = array_diff( $user_caps, $new_caps, $roles_in_cap_array );
-
+     
                 foreach ( $caps_to_remove as $_cap ) {
-                        $user->remove_cap( $_cap );
+                        $user->remove_cap( $_cap );                      
                 }    
 	}
 		
@@ -636,7 +639,7 @@ class UUC {
 
                 // Get rid of any bogus roles
                 $uuc_key_roles = array_filter( ( array ) get_option( 'uuc_key_roles' ) );
-
+ 
                 // collect the user roles uuc is to add to the local site
                 $new_roles = array( );
 
@@ -651,16 +654,16 @@ class UUC {
                 }   
                 
                 $new_roles = array_unique( $new_roles ); 
-
+                
                 $user_roles = array_intersect( array_values( $user->roles ), array_keys( $roles ) );
 
                 $roles_to_remove = array_diff( $user_roles, $new_roles );
 
  
                 foreach ( $roles_to_remove as $_role ) {
-                       $user->remove_role( $_role );
+                       $user->remove_role( $_role );                    
                 }
-
+ 
                 if ( $new_roles ) {
                         // Make sure that we don't call $user->add_role() 
                         // any more than it's necessary
@@ -669,7 +672,6 @@ class UUC {
                                 $user->add_role( $_role );
                         }       
                 }
-
 	}
 
         /**
@@ -698,10 +700,12 @@ class UUC {
                 switch_to_blog( $primary_ref_site );
 
                 global $wp_roles;
+
                 // Load roles if not set
                 if ( ! isset( $wp_roles ) ) {
                         $wp_roles = new WP_Roles( );
                 }
+
                 $ref_site_roles = $wp_roles->roles;
   
                 restore_current_blog();
@@ -773,7 +777,7 @@ class UUC {
      */
     public function user_has_role_for_blog( $blog_id, $role, $user_id ) {
 
-            $switched = is_multisite() ? switch_to_blog( $blog_id ) : false;
+            switch_to_blog( $blog_id );
             
             if ( is_numeric( $user_id ) ) {
                     $user = get_userdata( $user_id );
@@ -782,19 +786,12 @@ class UUC {
             }
 
 
-            if ( empty( $user ) ) {
-                if ( $switched ) {
-                        restore_current_blog();
-                }
+            if ( ! $user->exists( ) ) {
+                restore_current_blog( );
                 return false;
             }
 
-            if ( $switched ) {
-                restore_current_blog();
-            }
-            
-//var_dump($role);
-//var_dump($user->roles);
+            restore_current_blog( );
             return in_array( $role, ( array ) $user->roles );
     }
     
