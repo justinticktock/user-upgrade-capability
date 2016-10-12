@@ -50,48 +50,23 @@ class UUC_Upgrade_caps {
                     'page_title' => $upgrade_user->page_title,    	// menu options page title.
                     );
 
-    $settings = apply_filters( 'UUC_Upgrade_caps',  
-                                                    array( 
-                                                        /*
-                                                        'uuc_user_capabilities' => array(
-                                                                'access_capability' => 'manage_options',
-                                                                'title' 		=> __( 'Key Capability', 'user-upgrade-capability' ),
-                                                                'description' 	=> __( 'Define here the capabilities that a user will receive for this site if they already have a single "key" capability on a reference site/blog within the multi-site network.  On user login to the current local site the plugin will expand the local capabilities to include those listed below. If the "key" reference capability is removed from the user at the reference site then all capabilities will be removed from this site the user will need to re-enrole.', 'user-upgrade-capability' ),
-                                                                'settings' 		=> array(			
-                                                                                                array(
-                                                                                                        'name' 		=> 'uuc_reference_key_capability',
-                                                                                                        'std' 		=> '',
-                                                                                                        'label' 	=> __( 'Reference Site Key Capability', 'user-upgrade-capability' ),
-                                                                                                        'desc'		=> __( 'If left blank the site name will be used to search for as the capability on the reference site.', 'user-upgrade-capability' ),
-                                                                                                        ),											
-                                                                                                array(
-                                                                                                        'columns'   => "45",
-                                                                                                        'rows'   	=> "8",
-                                                                                                        'name' 		=> 'uuc_additional_capabilties',
-                                                                                                        'std' 		=> '',
-                                                                                                        'label' 	=> __( 'Local site Additional Capabilities', 'user-upgrade-capability' ),
-                                                                                                        'desc'		=> __( 'Put each capability on a separate row.', 'user-upgrade-capability' ),
-                                                                                                        'type'      => 'field_textarea_option',
-                                                                                                        ),
-                                                                                            ),										
+    $settings = apply_filters( 'UUC_Upgrade_Caps',  
+                    array(                      
+                        'uuc_key_caps' => array(
+                                'access_capability'     => 'manage_options',
+                                'title'                 => __( 'Key Capabilities :', 'user-upgrade-capability' ),
+                                'description'           => __( "Select key capabilities, users who have the same capabilities on the primary reference site will have access to this site.", 'user-upgrade-capability' ),												
+                                'settings'              => array(														
+                                                                array(
+                                                                        'name'  => 'uuc_key_caps',
+                                                                        'std'   => false,
+                                                                        'label' => __( 'Add Key Capability(s)', 'user-upgrade-capability' ),
+                                                                        'desc'  => __( 'Enable Key Capabilities to open new tabs from which you can upgrade the user access to this local site.', 'user-upgrade-capability' ),
+                                                                        'type'  => 'uuc_field_capabilties_list_checkbox',
+                                                                        ),					
                                                                 ),
-
-                                                        */
-                                                        'uuc_key_caps' => array(
-                                                                'access_capability'     => 'manage_options',
-                                                                'title'                 => __( 'Key Capabilities :', 'user-upgrade-capability' ),
-                                                                'description'           => __( "Select key capabilities, users who have the same capabilities on the primary reference site will have access to this site.", 'user-upgrade-capability' ),												
-                                                                'settings'              => array(														
-                                                                                                array(
-                                                                                                        'name'  => 'uuc_key_caps',
-                                                                                                        'std'   => array(),
-                                                                                                        'label' => __( 'Add Key Capability(s)', 'user-upgrade-capability' ),
-                                                                                                        'desc'  => __( 'Enable Key Capabilities to open new tabs from which you can upgrade the user access to this local site.', 'user-upgrade-capability' ),
-                                                                                                        'type'  => 'uuc_field_capabilties_list_checkbox',
-                                                                                                        ),					
-                                                                                                ),
-                                                                    ),                                                                                                                                           
-                                                        )
+                                    ),                                                                                                                                           
+                        )
             );
 
 
@@ -105,6 +80,7 @@ class UUC_Upgrade_caps {
                                                                 //'access_capability' => 'delete_users',
                                                                 'title' 		=> __( $capability , 'user-upgrade-capability' ),
                                                                 'description'           => sprintf( __( 'Users that have  the "%1$s" capability on the reference site will have the additional capabilities ticked below for this site ( %2$s ).', 'user-upgrade-capability' ), $capability, $current_site_name),                    
+																// 'form_action'   => admin_url( 'admin-post.php' ),
                                                                 'settings' 		=> array(		
                                                                                             array(
                                                                                                     'name'      => 'uuc_key_cap_' . $capability, //$capability, 
@@ -223,6 +199,8 @@ class UUC_Upgrade_caps_Additional_Methods {
                             }
                     }
 
+                    restore_current_blog();
+                    
                     /* Return the capabilities array, making sure there are no duplicates. */
                     $capabilities = array_unique( $capabilities );
                     asort( $capabilities );
@@ -257,8 +235,6 @@ class UUC_Upgrade_caps_Additional_Methods {
                     if ( ! empty( $option['desc'] ) ) {
                             echo ' <p class="description">' . $option['desc'] . '</p>';
                     }
-                    
-                    restore_current_blog();
             }
     }
 }

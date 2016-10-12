@@ -498,55 +498,51 @@ class UUC {
         }
         
         public function override_user_caps( ) {
-            
-                if( ! is_user_logged_in( ) ) {
-                        return false;
-                }
+      
+
                 
+                if(    ! is_user_logged_in( ) 
+                    && ! $this->is_login_page()
+                  ) {
+                        auth_redirect();
+                }
+
                 $user = wp_get_current_user( );
-                //$user_id = get_current_user_id( );
+               
                 $user_transient_name =  'uuc_user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
 
-                // drop out is transient still present
+                // drop out here until the transient expires
                 if( ! empty( $transient ) ) {
-                        // The function will return here every time after 
-                        // the first time it is run, until the transient expires.
                         return ;
                 }
-                
+
                 $primary_ref_site = get_option( 'uuc_reference_site' );                 
                 $current_site = get_current_blog_id();
 
                 if ( ! $primary_ref_site 
                      || ! is_multisite()
                      || $current_site == $primary_ref_site
-                     || ! current_user_can_for_blog( $primary_ref_site, 'read' ) 
                    ) 
                 {   
+                    // drop out and do nothing
                     return;
                 }
-
-                //$user = new WP_User( $user_id );
 
                 $this->override_wp_user_caps( $primary_ref_site, $user);
                 $this->override_wp_user_roles( $primary_ref_site, $user );
 
-               // if( ! is_user_member_of_blog( ) ) {
-                //        add_user_to_blog( get_current_blog_id( ), $user->ID, '' );
-              //  }
-                
+                if( ! is_user_member_of_blog( ) ) {
+                        add_user_to_blog( get_current_blog_id( ), $user->ID, '' );
+                }
+            
                 // if no cababilities assigned to the user after all overrides from 
                 // the primary ref site clean all and dropout
-                //if ( ! $user->allcaps ) {
-                    //die(var_dump( $user->allcaps ));
-                    
-                    // clean up full removal from site
-                   // $user->remove_all_caps();
-                   // wp_die("You don't have permission to access this site !");
-               // }
+                if ( ! $user->allcaps ) {
+                    wp_die( "You do not have permission." , 'user-upgrade-capability'  );
+                }
                 
-                // Set the user transient limit to 10 sec minumum overwrite interval
+                // Set the user transient limit to 10 sec minumum overwrite interval          
                 $delay_time = max( get_option( 'uuc_delay_check' ) * MINUTE_IN_SECONDS, 10 )  ;
                 set_transient( $user_transient_name, true, $delay_time );
                         
@@ -862,7 +858,10 @@ class UUC {
         }   
         
  
-            
+        public function is_login_page() {
+            return in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'));
+        }  
+        
         /**
          * Creates or returns an instance of this class.
          *

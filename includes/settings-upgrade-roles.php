@@ -57,15 +57,14 @@ class UUC_Upgrade_Roles {
                                         'title' 		=> __( 'Key Roles :','user-upgrade-capability' ),
                                         'description' 	=> __( 'Select key roles, users who have the same role(s) on the primary reference site will have access to this site.','user-upgrade-capability' ),
                                         'settings' 		=> array(														
-
-                                                                                        array(
-                                                                                                'name' 		=> 'uuc_key_roles',
-                                                                                                'std' 		=> false,
-                                                                                                'label' 	=> __( 'Key Role(s)','user-upgrade-capability' ),
-                                                                                                'desc'		=> __( 'Enable Key Roles to open new tabs from which you can upgrade the user access to this local site.', 'user-upgrade-capability' ),
-                                                                                                'type'          => 'ref_site_field_roles_checkbox',
-                                                                                                ),					
-                                                                                        ),			
+                                                                array(
+                                                                        'name' 		=> 'uuc_key_roles',
+                                                                        'std' 		=> false,
+                                                                        'label' 	=> __( 'Key Role(s)','user-upgrade-capability' ),
+                                                                        'desc'		=> __( 'Enable Key Roles to open new tabs from which you can upgrade the user access to this local site.', 'user-upgrade-capability' ),
+                                                                        'type'          => 'ref_site_field_roles_checkbox',
+                                                                        ),					
+                                                                ),			
                                 ), 
                             )
 			);
