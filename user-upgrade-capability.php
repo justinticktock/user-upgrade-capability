@@ -528,7 +528,10 @@ class UUC {
                     // drop out and do nothing
                     return;
                 }
-
+                // add user to site to start with this will get cleaned up with the next two lines
+                add_user_to_blog( $current_site, $user->ID, 'subscriber');
+                
+                
                 $this->override_wp_user_caps( $primary_ref_site, $user);
                 $this->override_wp_user_roles( $primary_ref_site, $user );
 
