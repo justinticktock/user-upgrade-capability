@@ -468,7 +468,7 @@ class UUC {
 
                 $site_transient_name =  'uuc_site_block_role_cap_alignment';
                 $transient = get_transient( $site_transient_name );
-
+$transient = false;
                 // drop out is transient still present
                 if( ! empty( $transient ) ) {
                         // The function will return here every time after 
@@ -476,20 +476,22 @@ class UUC {
                         return ;
                 }
                
-                $primary_ref_site = get_option( 'uuc_reference_site' );                 
+                $primary_ref_site = get_option( 'uuc_reference_site' );           
                 $current_site = get_current_blog_id();
-
-                if ( ! $primary_ref_site 
+                $user = wp_get_current_user( );                
+                 
+                if ( $primary_ref_site == 0  // if no ref site
                    //  || ! current_user_can( 'manage_options' )
                      || ! is_multisite()
                      || $current_site == $primary_ref_site
-                     || ! current_user_can_for_blog( $primary_ref_site, 'read' ) 
+                    // || ! current_user_can_for_blog( $primary_ref_site, 'read' ) 
+                     || ! is_user_member_of_blog( $user->ID, $primary_ref_site )
                    ) 
                 {   
                     return;
                 }
-
-                $this->clone_roles_caps_from_ref_site( );
+//die(var_dump($primary_ref_site)); 
+                $this->clone_roles_caps_from_ref_site( $primary_ref_site, $current_site );
 
                 // Set the user transient limit to 10 sec minumum overwrite interval
                 $delay_time = max( get_option( 'uuc_delay_check' ) * MINUTE_IN_SECONDS, 10 )  ;
@@ -498,19 +500,8 @@ class UUC {
         }
         
         public function override_user_caps( ) {
- return;            
-                $user = wp_get_current_user( );
-                
-                if( ! $user->exists( )
-                    && ! $this->is_login_page()
-                  ) {
-                        auth_redirect();
-                  }
-                  
-                if( $this->is_login_page( ) ) {
-                        return;
-                  }
-
+           
+                $user = wp_get_current_user( );                
                 $user_transient_name =  'uuc_user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
 $transient = false; 
@@ -530,7 +521,30 @@ $transient = false;
                     // drop out and do nothing
                     return;
                 }
-
+                
+                /*
+                 * Don't force to login for this site we are attempting to have
+                 * a seamless user experience where they don't know its a different
+                 * site.
+                */
+                if( ! $user->exists( )
+                  //  && ! $this->is_login_page()
+                  ) {
+                        global $wp;
+                        $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
+                       // $current_url = get_permalink();                       
+                        switch_to_blog( $primary_ref_site );
+                        wp_redirect( wp_login_url( $current_url ) );
+                        restore_current_blog( );
+			exit;                    
+                        //auth_redirect();
+                  }
+ //return;                
+                if( $this->is_login_page( ) ) {
+                        return;
+                  }
+                  
+ //return;     
                 // add user to site to start with this will get cleaned up with the next two lines
             //    add_user_to_blog( $current_site, $user->ID, 'subscriber');
 
@@ -681,13 +695,13 @@ $transient = false;
          * @param int $primary_ref_site Reference Site/blog.
          * @param object $user current user object.
          */
-	public function clone_roles_caps_from_ref_site( ) {
+	public function clone_roles_caps_from_ref_site( $primary_ref_site, $current_site ) {
                  
-                $primary_ref_site = get_option('uuc_reference_site');
-                $current_site = get_current_blog_id();
+               // $primary_ref_site = get_option( 'uuc_reference_site' );
+                //$current_site = get_current_blog_id();
                 $uuc_key_roles = array_filter( ( array ) get_option( 'uuc_key_roles' ) ); 
 
-                if ( ! $primary_ref_site 
+                if ( $primary_ref_site == 0  // if no ref site
                      || ! is_multisite()
                      || $current_site == $primary_ref_site
                      || empty( $uuc_key_roles )
@@ -696,7 +710,7 @@ $transient = false;
                     return;
                 }
                              
-                    
+            
                 switch_to_blog( $primary_ref_site );
 
                 global $wp_roles;
@@ -709,33 +723,34 @@ $transient = false;
                 $ref_site_roles = $wp_roles->roles;
   
                 restore_current_blog();
+                
+                // always keep the wordpress basic roles, if available on the 
+                // reference site this will stop plugin faults where they 
+                // expect these roles to be present
+                $role_keys = array_unique( array_merge( $uuc_key_roles, 
+                                                        array( 'administrator', 
+                                                            'editor', 
+                                                            'author', 
+                                                            'contributor', 
+                                                            'subscriber',
+                                                        ) 
+                                                      ) 
+                                        );
 
                 foreach ( $ref_site_roles as $role_key => $role ) {
-                   
+ 
                         // remove all roles locally.
                         remove_role( $role_key );
                         
                         //echo var_dump( ( $role_key ) );
                         //echo var_dump( ( $role[ 'name' ] ) );
-                        //echo var_dump( ( $role[ 'capabilities' ] ) );
-                        
-                        // always keep the wordpress basic roles, if available on the 
-                        // reference site this will stop plugin faults where they 
-                        // expect these roles to be present
-                        $role_keys = array_unique( array_merge( $uuc_key_roles, 
-                                                                array( 'administrator', 
-                                                                    'editor', 
-                                                                    'author', 
-                                                                    'contributor', 
-                                                                    'subscriber' ) 
-                                                                ) 
-                                                );
-
-                        // add if around this to limit to only the uuc selected roles.
+                        //echo var_dump( ( $role[ 'capabilities' ] ) );                       
+ 
+                        // re-add role and limit to only the uuc selected roles.
                         if ( in_array( $role_key, $role_keys ) ) {
 
                            // this causes issues with memmory usage.
-                           $this->clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ]);
+                           $this->clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ] );
 
                            //UUC_ROLE::clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ]);
                             
@@ -754,11 +769,12 @@ $transient = false;
          */
         public function clone_role( $role, $rolename, $caps ) {
 
-            add_role( $role, $rolename );
+            //add_role( $role, $rolename );
+            //$role_instance = get_role( $role );
+            $role_instance = add_role( $role, $rolename );
 
-            $role_instance = get_role( $role );
             foreach( $caps as $cap_key => $cap_enabled ) {
-
+//die(var_dump($role_instance));
                     if ( $cap_enabled ) {
                           $role_instance->add_cap( $cap_key );
                     }
@@ -784,7 +800,6 @@ $transient = false;
             } else {
                     $user = wp_get_current_user( );
             }
-
 
             if ( ! $user->exists( ) ) {
                 restore_current_blog( );
