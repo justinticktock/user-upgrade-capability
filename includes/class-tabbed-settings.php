@@ -117,85 +117,85 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			}
 			return $user_has_all_caps;
 		}		
-		
-		
-        /**
-		 *		 
-         * Go through the tabbed_settings and limit based on current user capability.
-         *
-         * @param void
-         */
-        private function register_tabbed_settings( $settings ) {
-		
-			$this->settings = $settings;
-			
-			foreach ( $this->settings as $tab_name => $registered_setting_page ) {
-			
-				// remove form elements based on user capability
-				if ( ( array_key_exists( 'access_capability', $registered_setting_page ) ) && _
-					 ( ! $this->current_user_can_do_all( $registered_setting_page['access_capability'] ) ) ) {
-					 
-					// remove settings pages/tabs if user is lacking the 'access_capability'
-					unset( $this->settings[$tab_name] );
-					
-				} else {
-				
-					// now remove individual settings if user is lacking the 'access_capability'
-					foreach ( $this->settings[$tab_name]['settings'] as $settings_field_key => $settings_field_options ) {
 
-						if ( ( array_key_exists( 'access_capability', $settings_field_options ) ) && ( ! $this->current_user_can_do_all( $settings_field_options['access_capability'] ) ) ) {
-							unset( $this->settings[$tab_name]['settings'][$settings_field_key] );
-						}
-					}			
-				}
-			}
-				
-			// If the 'default_tab_key' no longer exists due to the access_capability removal of settings
-			if ( ! array_key_exists( 'default_tab_key', ( array ) $this->settings ) ) {
 
-				$current_user_settings = array_filter( $this->settings );
-				
-				if ( ! empty( $current_user_settings ) ) {
-				
-					$first_key = key( $current_user_settings );
-				
-					$this->default_tab_key = $first_key;
-				}
-			}
-        }
+                /**
+                         *		 
+                 * Go through the tabbed_settings and limit based on current user capability.
+                 *
+                 * @param void
+                 */
+                private function register_tabbed_settings( $settings ) {
 
-        /**
-         * Amend default configuration.  This function strips out the config array elements and stores them 
-         * as a variable within the current Class object $this->"config-element" will be the means to return the 
-         * current configuration stored.
-         *
-         * @param array $config Array of config options to pass as class properties.
-		 * @return - sets up the CLASS object values $this->config.
-         */
-        public function register_config( $config ) {
+                                $this->settings = $settings;
 
-            $keys = array( 
-                                'default_tab_key',
-                                'menu_parent',
-                                'menu_access_capability',
-                                'menu',
-                                'menu_title',
-                                'page_title',
-                        );
+                                foreach ( $this->settings as $tab_name => $registered_setting_page ) {
 
-            foreach ( $keys as $key ) {
-                if ( isset( $config[$key] ) ) {
-                    if ( is_array( $config[$key] ) ) {
-                        foreach ( $config[$key] as $subkey => $value ) {
-                           $this->{$key}[$subkey] = $value;
+                                        // remove form elements based on user capability
+                                        if ( ( array_key_exists( 'access_capability', $registered_setting_page ) ) && _
+                                                 ( ! $this->current_user_can_do_all( $registered_setting_page['access_capability'] ) ) ) {
+
+                                                // remove settings pages/tabs if user is lacking the 'access_capability'
+                                                unset( $this->settings[$tab_name] );
+
+                                        } else {
+
+                                                // now remove individual settings if user is lacking the 'access_capability'
+                                                foreach ( $this->settings[$tab_name]['settings'] as $settings_field_key => $settings_field_options ) {
+
+                                                        if ( ( array_key_exists( 'access_capability', $settings_field_options ) ) && ( ! $this->current_user_can_do_all( $settings_field_options['access_capability'] ) ) ) {
+                                                                unset( $this->settings[$tab_name]['settings'][$settings_field_key] );
+                                                        }
+                                                }			
+                                        }
+                                }
+
+                                // If the 'default_tab_key' no longer exists due to the access_capability removal of settings
+                                if ( ! array_key_exists( 'default_tab_key', ( array ) $this->settings ) ) {
+
+                                        $current_user_settings = array_filter( $this->settings );
+
+                                        if ( ! empty( $current_user_settings ) ) {
+
+                                                $first_key = key( $current_user_settings );
+
+                                                $this->default_tab_key = $first_key;
+                                        }
+                                }
+                }
+
+                /**
+                 * Amend default configuration.  This function strips out the config array elements and stores them 
+                 * as a variable within the current Class object $this->"config-element" will be the means to return the 
+                 * current configuration stored.
+                 *
+                 * @param array $config Array of config options to pass as class properties.
+                 * @return - sets up the CLASS object values $this->config.
+                 */
+                public function register_config( $config ) {
+
+                    $keys = array( 
+                                        'default_tab_key',
+                                        'menu_parent',
+                                        'menu_access_capability',
+                                        'menu',
+                                        'menu_title',
+                                        'page_title',
+                                );
+
+                    foreach ( $keys as $key ) {
+                        if ( isset( $config[$key] ) ) {
+                            if ( is_array( $config[$key] ) ) {
+                                foreach ( $config[$key] as $subkey => $value ) {
+                                   $this->{$key}[$subkey] = $value;
+                                }
+                            } else {
+                                $this->$key = $config[$key];
+                            }
                         }
-                    } else {
-                        $this->$key = $config[$key];
                     }
                 }
-            }
-        }
-		
+
 		/**
 		 * render_setting_page function.
 		 *

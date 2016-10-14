@@ -13,7 +13,6 @@ function uuc_plugin_action_links( $links ) {
 	return $links;	
 }
 
-
 // add action after the settings save hook.
 add_action( 'tabbed_settings_after_update', 'uuc_after_settings_update' );
 
@@ -22,8 +21,6 @@ function uuc_after_settings_update( ) {
 	flush_rewrite_rules();	
 	
 }
-
-
 
 /**
  * UUC_General_Settings class.
@@ -55,7 +52,7 @@ class UUC_General_Settings {
 		add_submenu_page( 'users.php', __( 'User Upgrade Capability', 'user-upgrade-capability' ), __( 'Upgrade Capability', 'user-upgrade-capability' ), 'manage_network_users', UUC_General_Settings::get_instance()->menu . 'general', array( $this, 'plugin_options_page' ) );	
 	}
 	
-	/**
+    /**
      * Creates or returns an instance of this class.
      *
      * @return   A single instance of this class.
@@ -65,10 +62,10 @@ class UUC_General_Settings {
             $upgrade_user = UUC::get_instance();
 
             $config = array(
-                        'default_tab_key' => 'uuc_general',					// Default settings tab, opened on first settings page open.
-                        'menu_parent' => 'users.php',    					// menu options page slug name.
-                        'menu_access_capability' => 'manage_options', 			// menu options page slug name.
-                        'menu' => $upgrade_user->menu,    					// menu options page slug name.
+                        'default_tab_key' => 'uuc_general',			// Default settings tab, opened on first settings page open.
+                        'menu_parent' => 'users.php',    			// menu options page slug name.
+                        'menu_access_capability' => 'manage_options', 		// menu options page slug name.
+                        'menu' => $upgrade_user->menu,    			// menu options page slug name.
                         'menu_title' => $upgrade_user->menu_title,    		// menu options page slug name.
                         'page_title' => $upgrade_user->page_title,    		// menu options page title.
                         );

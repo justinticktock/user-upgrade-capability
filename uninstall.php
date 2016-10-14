@@ -72,7 +72,6 @@ function uuc_role_upgrade_option_clean_up( ) {
 
 }
 
-
 function uuc_caps_upgrade_option_clean_up( ) {
 	
 	$option_names = array_keys( wp_load_alloptions( ) );

@@ -15,7 +15,7 @@ Link multiple network sites/blogs together - Maintain only one site list of user
 
 However, without 'User Upgrade Capabilities' you would need to maintain the user access on each site, this is an overhead for administrators since for each site Admins will need to grant access and add/remove capabilties & roles as required, which all takes time.  'User Upgrade Capability' helps with this admin task and allows you to create a new site and point back to a master reference site re-using its user listing and capabilties/roles to define access permissions for the new linked site.
 
-One example of where this approach is helpful is for the case where you want multiple calendars for different purposes on the same Wordpress site.  Calendar plugins generally use a fixed database table name, this means that you can't install two calendars on the same site.  With 'User Upgrade Capability' you can create a new site for each calendar and point back to the reference site re-using its user base and capabilties.  The end user doesn't even know that the calendars are on a different site.
+One example of where this approach is helpful is for the case where you want multiple calendars for different purposes on the same WordPress site.  Calendar plugins generally use a fixed database table name, this means that you can't install two calendars on the same site.  With 'User Upgrade Capability' you can create a new site for each calendar and point back to the reference site re-using its user base and capabilties.  The end user doesn't even know that the calendars are on a different site.
 
 
 = Plugin site =

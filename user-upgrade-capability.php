@@ -15,7 +15,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-
 /**
  * UUC class.
  */
@@ -23,17 +22,17 @@ class UUC {
 
 	// Refers to a single instance of this class.
         private static $instance = null;
-
-        public	 $plugin_full_path;
+        
+        // file path relative to the plugin directory
         public   $plugin_file = 'user-upgrade-capability/user-upgrade-capability.php';
 
-            // Settings page slug	
+        // Settings page slug	
         public	 $menu = 'uuc-settings';
 
-            // Settings Admin Menu Title
+        // Settings Admin Menu Title
         public	 $menu_title = 'Reference Site';
 
-            // Settings Page Title
+        // Settings Page Title
         public	 $page_title = 'Upgrade Capability';
 
         /**
@@ -141,7 +140,7 @@ class UUC {
 	 * @return void
 	 */
 	public function sub_menu_page() {
-		// 
+		
 	}	
 	
 	/**
@@ -241,6 +240,7 @@ class UUC {
 
 		// Record plugin activation date initially
 		add_option( 'uuc_install_date',  time() ); 
+                
 		// force timeout to be 15 mins initially 
 		add_option( 'uuc_delay_check', 15 );
 
@@ -468,7 +468,7 @@ class UUC {
 
                 $site_transient_name =  'uuc_site_block_role_cap_alignment';
                 $transient = get_transient( $site_transient_name );
-$transient = false;
+
                 // drop out is transient still present
                 if( ! empty( $transient ) ) {
                         // The function will return here every time after 
@@ -490,7 +490,7 @@ $transient = false;
                 {   
                     return;
                 }
-//die(var_dump($primary_ref_site)); 
+
                 $this->clone_roles_caps_from_ref_site( $primary_ref_site, $current_site );
 
                 // Set the user transient limit to 10 sec minumum overwrite interval
@@ -504,7 +504,7 @@ $transient = false;
                 $user = wp_get_current_user( );                
                 $user_transient_name =  'uuc_user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
-$transient = false; 
+
                 // drop out here until the transient expires
                 if( ! empty( $transient ) ) {
                         return ;
@@ -522,11 +522,6 @@ $transient = false;
                     return;
                 }
                 
-                /*
-                 * Don't force to login for this site we are attempting to have
-                 * a seamless user experience where they don't know its a different
-                 * site.
-                */
                 if( ! $user->exists( )
                   //  && ! $this->is_login_page()
                   ) {
@@ -539,22 +534,14 @@ $transient = false;
 			exit;                    
                         //auth_redirect();
                   }
- //return;                
+            
                 if( $this->is_login_page( ) ) {
                         return;
                   }
                   
- //return;     
-                // add user to site to start with this will get cleaned up with the next two lines
-            //    add_user_to_blog( $current_site, $user->ID, 'subscriber');
-
                 $this->override_wp_user_caps( $primary_ref_site, $user );
                 $this->override_wp_user_roles( $primary_ref_site, $user );
 
-              //  if( ! is_user_member_of_blog( ) ) {
-             //           add_user_to_blog( get_current_blog_id( ), $user->ID, 'subscriber' );
-              //  }
-            
                 // if no cababilities assigned to the user after all overrides from 
                 // the primary ref site clean all and dropout
                 if ( ! $user->allcaps ) {
@@ -625,7 +612,7 @@ $transient = false;
                 $wp_roles = wp_roles();
                 $caps_to_remove = array_diff( $user_caps, $new_caps );
                 $roles_in_cap_array = array_filter( $caps_to_remove, array( $wp_roles, 'is_role' ) );
-//die(var_dump($roles_in_cap_array));               
+           
                 $caps_to_remove = array_diff( $user_caps, $new_caps, $roles_in_cap_array );
      
                 foreach ( $caps_to_remove as $_cap ) {
@@ -697,8 +684,6 @@ $transient = false;
          */
 	public function clone_roles_caps_from_ref_site( $primary_ref_site, $current_site ) {
                  
-               // $primary_ref_site = get_option( 'uuc_reference_site' );
-                //$current_site = get_current_blog_id();
                 $uuc_key_roles = array_filter( ( array ) get_option( 'uuc_key_roles' ) ); 
 
                 if ( $primary_ref_site == 0  // if no ref site
@@ -741,19 +726,13 @@ $transient = false;
  
                         // remove all roles locally.
                         remove_role( $role_key );
-                        
-                        //echo var_dump( ( $role_key ) );
-                        //echo var_dump( ( $role[ 'name' ] ) );
-                        //echo var_dump( ( $role[ 'capabilities' ] ) );                       
- 
+
                         // re-add role and limit to only the uuc selected roles.
                         if ( in_array( $role_key, $role_keys ) ) {
 
                            // this causes issues with memmory usage.
                            $this->clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ] );
-
-                           //UUC_ROLE::clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ]);
-                            
+ 
                         } 
 		}
 
@@ -769,12 +748,10 @@ $transient = false;
          */
         public function clone_role( $role, $rolename, $caps ) {
 
-            //add_role( $role, $rolename );
-            //$role_instance = get_role( $role );
             $role_instance = add_role( $role, $rolename );
 
             foreach( $caps as $cap_key => $cap_enabled ) {
-//die(var_dump($role_instance));
+
                     if ( $cap_enabled ) {
                           $role_instance->add_cap( $cap_key );
                     }
@@ -782,36 +759,36 @@ $transient = false;
 
         }
    
-                
-    /**
-     * Checks if a particular user has a role. 
-     * Returns true if a match was found.
-     *
-     * @param string $role Role name.
-     * @param int $user_id (Optional ) The ID of a user. Defaults to the current user.
-     * @return bool
-     */
-    public function user_has_role_for_blog( $blog_id, $role, $user_id ) {
 
-            switch_to_blog( $blog_id );
-            
-            if ( is_numeric( $user_id ) ) {
-                    $user = get_userdata( $user_id );
-            } else {
-                    $user = wp_get_current_user( );
-            }
+        /**
+         * Checks if a particular user has a role. 
+         * Returns true if a match was found.
+         *
+         * @param string $role Role name.
+         * @param int $user_id (Optional ) The ID of a user. Defaults to the current user.
+         * @return bool
+         */
+        public function user_has_role_for_blog( $blog_id, $role, $user_id ) {
 
-            if ( ! $user->exists( ) ) {
+                switch_to_blog( $blog_id );
+
+                if ( is_numeric( $user_id ) ) {
+                        $user = get_userdata( $user_id );
+                } else {
+                        $user = wp_get_current_user( );
+                }
+
+                if ( ! $user->exists( ) ) {
+                    restore_current_blog( );
+                    return false;
+                }
+
                 restore_current_blog( );
-                return false;
-            }
+                return in_array( $role, ( array ) $user->roles );
+        }
 
-            restore_current_blog( );
-            return in_array( $role, ( array ) $user->roles );
-    }
-    
-    
-    
+
+
 
         static public function wp_capabilities() {
 
@@ -891,44 +868,7 @@ $transient = false;
                 return self::$instance;
 
     }		
-}
-
-
-
-
-/**
- * UUC_CLONE_ROLE class.
- * 
- * a separate class has been created to free memory after each use
- * 
- */
-class UUC_ROLE {
-        /**
-         * Re-creates the role locally taking a copy from the reference/primary site
-         *
-         * @param string $role
-         * @param string $rolename
-         * @param array $caps
-         * @return void
-         */
-        static function clone_role( $role, $rolename, $caps ) {
-//echo $role; die();
-            add_role( $role, $rolename );
-
-            // Add caps for role  only if enabled
-            $role_instance = get_role( $role );
-            foreach( $caps as $cap_key => $cap_enabled ) {
-
-                    if ( $cap_enabled 
-                        // &&  in_array( $role, array( 'subscriber', 'contributor', 'bbp_blocked', 'administrator', 'author' ))
-                            ) {
-                            $role_instance->add_cap( $cap_key );
-                    }
-            }
-
-        }
-}   
-        
+}  
 
 /**
  * Init Upgrade User Capability class
