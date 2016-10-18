@@ -62,9 +62,11 @@ Now all subscribers on the primary reference site will automatically be given su
 == Screenshots ==
 
 1. General Settings Screen (Reference Site).
-2. Upgrade Roles Settings Screen.
-3. Upgrade Caps Settings Screen.
-4. Plugin Suggestions Settings Screen.
+2. Define Key Roles
+3. Users with the sp_staff role on the primary reference site will have the administrator & author roles on the local site
+2. Define Key Capabilities
+5. Users with the view_sportspress_reports capability on the primary reference site will have the more capabilities added to this local site.
+6. Plugin Suggestions
 
 == Changelog ==
 

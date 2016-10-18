@@ -43,6 +43,13 @@ class UUC {
 	 */
 	public function __construct() {
 
+                // drop out with warning if not a Network
+
+                if ( ! is_multisite() ) {
+                        add_action( 'admin_notices', array( $this, 'admin_not_a_network_notice' ));
+                        return;
+                }	
+                
 		// Load the textdomain.
 		add_action( 'plugins_loaded', array( $this, 'i18n' ), 1 );
 
@@ -62,7 +69,7 @@ class UUC {
 		// Load admin error messages	
 		add_action( 'admin_init', array( $this, 'deactivation_notice' ));
 		add_action( 'admin_notices', array( $this, 'action_admin_notices' ));
-
+                
 		// override local site capability and roles
 		add_action( 'init', array( $this, 'override_site_caps') ); 
                 
@@ -299,25 +306,27 @@ class UUC {
 	 * @return null
 	 */
 	public static function on_deactivation()
-    {
-        if ( ! current_user_can( 'activate_plugins' ) )
-            return;
-        $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
-        check_admin_referer( "deactivate-plugin_{$plugin}" );
-	
-		$plugin_slug = explode( "/", $plugin);
-		$plugin_slug = $plugin_slug[0];
-		update_option( "uuc_deactivate_{$plugin_slug}", true );
-    }
-	
+        {
+            if ( ! current_user_can( 'activate_plugins' ) )
+                return;
+            $plugin = isset( $_REQUEST['plugin'] ) ? $_REQUEST['plugin'] : '';
+            check_admin_referer( "deactivate-plugin_{$plugin}" );
+
+                    $plugin_slug = explode( "/", $plugin);
+                    $plugin_slug = $plugin_slug[0];
+                    update_option( "uuc_deactivate_{$plugin_slug}", true );
+        }
+
+
+        
 	/**
 	 * Display the admin warnings.
 	 *
 	 * @access public
 	 * @return null
 	 */
-	public function action_admin_notices() {
-
+	public function action_admin_notices( ) {                     
+            
 		// loop plugins forced active.
 		$plugins = UUC_General_Settings::get_instance()->selected_plugins( 'uuc_plugin_extension' );
 
@@ -328,7 +337,7 @@ class UUC {
 		}
 		
 		// Prompt for rating
-		$this->action_admin_rating_prompt_notices();
+		$this->action_admin_rating_prompt_notices( );
 	}
 	
 	/**
@@ -358,7 +367,7 @@ class UUC {
 	 * @access public
 	 * @return null
 	 */
-	public function action_init_store_user_meta() {
+	public function action_init_store_user_meta( ) {
 		
 		// store the initial starting meta for a user
 		add_user_meta( get_current_user_id(), 'uuc_start_date', time(), true );
@@ -406,7 +415,29 @@ class UUC {
 			}
 		}	
 	}
+
+        
+	/**
+	 * Send Error message to Amdin when a non-multisite installation.
+	 *
+	 * @access public
+	 * @return null
+	 */
+	public function admin_not_a_network_notice( ) {
+                // Prompt for multisite error
+                ?>
+                <div class="notice notice-error">
+                                <p>
+                                <?php esc_html_e( __("The User Upgrade Capability plugin only functions on WordPress Multisite.", 'user-upgrade-capability' ) ); ?>
+                                </p>
+                        </p>
+                </div>
+                <?php 
+
+
+	}
 	
+        
 	/**
 	 * Store the user selection from the rate the plugin prompt.
 	 *
@@ -468,7 +499,7 @@ class UUC {
 
                 $site_transient_name =  'uuc_site_block_role_cap_alignment';
                 $transient = get_transient( $site_transient_name );
-
+//$transient = false;
                 // drop out is transient still present
                 if( ! empty( $transient ) ) {
                         // The function will return here every time after 
@@ -482,7 +513,7 @@ class UUC {
                  
                 if ( $primary_ref_site == 0  // if no ref site
                    //  || ! current_user_can( 'manage_options' )
-                     || ! is_multisite()
+                     // || ! is_multisite() // never needed drops out initially
                      || $current_site == $primary_ref_site
                     // || ! current_user_can_for_blog( $primary_ref_site, 'read' ) 
                      || ! is_user_member_of_blog( $user->ID, $primary_ref_site )
@@ -500,21 +531,31 @@ class UUC {
         }
         
         public function override_user_caps( ) {
-           
-                $user = wp_get_current_user( );                
+
+                $user = wp_get_current_user( );   // <<< not requried if we keep the following method
+
+// try this switch to primary (it follows the core method)     
+                /*
+                $primary_ref_site = get_option( 'uuc_reference_site' );                 
+            	switch_to_blog( $primary_ref_site );
+                global $current_user;
+                $user = get_userdata( $current_user->ID );
+                restore_current_blog( );
+                 */
+                
+//die(var_dump($user))  ;   
                 $user_transient_name =  'uuc_user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
-
+//$transient = false;
                 // drop out here until the transient expires
                 if( ! empty( $transient ) ) {
                         return ;
                 }
-
-                $primary_ref_site = get_option( 'uuc_reference_site' );                 
+                
                 $current_site = get_current_blog_id();
-
+                $primary_ref_site = get_option( 'uuc_reference_site' ); 
                 if ( ! $primary_ref_site 
-                     || ! is_multisite()
+                    // || ! is_multisite()  // never needed drops out initially
                      || $current_site == $primary_ref_site
                    ) 
                 {   
@@ -687,7 +728,7 @@ class UUC {
                 $uuc_key_roles = array_filter( ( array ) get_option( 'uuc_key_roles' ) ); 
 
                 if ( $primary_ref_site == 0  // if no ref site
-                     || ! is_multisite()
+                    // || ! is_multisite()   // never needed drops out initially
                      || $current_site == $primary_ref_site
                      || empty( $uuc_key_roles )
                    )
