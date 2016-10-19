@@ -17,8 +17,9 @@ function uuc_plugin_action_links( $links ) {
 add_action( 'tabbed_settings_after_update', 'uuc_after_settings_update' );
 
 function uuc_after_settings_update( ) {
-
-	flush_rewrite_rules();	
+	
+        $upgrade_user = UUC::get_instance();
+        $upgrade_user->purge_uuc_transients();
 	
 }
 
