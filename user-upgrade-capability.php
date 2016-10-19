@@ -22,7 +22,10 @@ class UUC {
 
 	// Refers to a single instance of this class.
         private static $instance = null;
-        
+
+	// Define transient prefix
+        public $transient_prefix = 'uuc_';
+
         // file path relative to the plugin directory
         public   $plugin_file = 'user-upgrade-capability/user-upgrade-capability.php';
 
@@ -34,6 +37,11 @@ class UUC {
 
         // Settings Page Title
         public	 $page_title = 'Upgrade Capability';
+        
+        
+        
+        
+        
 
         /**
 	 * __construct function.
@@ -44,7 +52,6 @@ class UUC {
 	public function __construct() {
 
                 // drop out with warning if not a Network
-
                 if ( ! is_multisite() ) {
                         add_action( 'admin_notices', array( $this, 'admin_not_a_network_notice' ));
                         return;
@@ -496,44 +503,49 @@ class UUC {
 
         public function override_site_caps( ) {
                 
-
-                $site_transient_name =  'uuc_site_block_role_cap_alignment';
-                $transient = get_transient( $site_transient_name );
-//$transient = false;
+                $site_transient_name =  $this->get_transient_prefix( ) . 'site_block_role_cap_alignment';
+                $transient_primary_site_roles = get_transient( $site_transient_name );
+//$transient_primary_site_roles = false;
                 // drop out is transient still present
-                if( ! empty( $transient ) ) {
+                if( ! empty( $transient_primary_site_roles ) ) {
                         // The function will return here every time after 
                         // the first time it is run, until the transient expires.
                         return ;
                 }
-               
-                $primary_ref_site = get_option( 'uuc_reference_site' );           
+
+               // $prefix = esc_sql( $this->get_transient_prefix( ) );
+                $primary_ref_site = get_option( $this->get_transient_prefix( ) . 'reference_site' );                                       
                 $current_site = get_current_blog_id();
                 $user = wp_get_current_user( );                
                  
-                if ( $primary_ref_site == 0  // if no ref site
-                   //  || ! current_user_can( 'manage_options' )
-                     // || ! is_multisite() // never needed drops out initially
-                     || $current_site == $primary_ref_site
-                    // || ! current_user_can_for_blog( $primary_ref_site, 'read' ) 
-                     || ! is_user_member_of_blog( $user->ID, $primary_ref_site )
-                   ) 
-                {   
+                $local_roles = $this->clone_roles_caps_from_ref_site( $primary_ref_site, $current_site );                                                    
+
+                //drop out if no roles updated locally.
+                if ( ! $local_roles ) {    
                     return;
                 }
-
-                $this->clone_roles_caps_from_ref_site( $primary_ref_site, $current_site );
-
-                // Set the user transient limit to 10 sec minumum overwrite interval
-                $delay_time = max( get_option( 'uuc_delay_check' ) * MINUTE_IN_SECONDS, 10 )  ;
-                set_transient( $site_transient_name, true, $delay_time );
-                        
+                
+                //if we are refreshing the site role/caps cloning again from the primary site 
+                //then delete user transients to force a refresh of user caps     
+                $this->purge_uuc_transients();
+                
+                // Set the user transient to one hour for overwrite of the site role/cap setup           
+                $delay_time = 1 * HOUR_IN_SECONDS;
+                set_transient( $site_transient_name, true, $delay_time ); 
         }
         
         public function override_user_caps( ) {
-
-                $user = wp_get_current_user( );   // <<< not requried if we keep the following method
-
+            
+                $current_site = get_current_blog_id();
+                $primary_ref_site = get_option( 'uuc_reference_site' ); 
+                if ( ! $primary_ref_site
+                     || $current_site == $primary_ref_site
+                   ) 
+                {   
+                    // drop out and do nothing
+                    return;
+                }
+                
 // try this switch to primary (it follows the core method)     
                 /*
                 $primary_ref_site = get_option( 'uuc_reference_site' );                 
@@ -543,43 +555,32 @@ class UUC {
                 restore_current_blog( );
                  */
                 
-//die(var_dump($user))  ;   
-                $user_transient_name =  'uuc_user_' . $user->ID . '_block_override';
+//die(var_dump($user))  ;  
+            
+                $user = wp_get_current_user( );
+       
+                if( ! $user->exists( ) ) {
+                        global $wp;
+                        $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
+                        switch_to_blog( $primary_ref_site );
+                        wp_redirect( wp_login_url( $current_url ) );
+                        restore_current_blog( );
+			exit;                
+                  }
+            
+              //  if( $this->is_login_page( ) ) {
+              //          return;
+              //    }
+                  
+                  
+                $user_transient_name = $this->get_transient_prefix( ) . 'user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
 //$transient = false;
                 // drop out here until the transient expires
                 if( ! empty( $transient ) ) {
                         return ;
-                }
+                }                
                 
-                $current_site = get_current_blog_id();
-                $primary_ref_site = get_option( 'uuc_reference_site' ); 
-                if ( ! $primary_ref_site 
-                    // || ! is_multisite()  // never needed drops out initially
-                     || $current_site == $primary_ref_site
-                   ) 
-                {   
-                    // drop out and do nothing
-                    return;
-                }
-                
-                if( ! $user->exists( )
-                  //  && ! $this->is_login_page()
-                  ) {
-                        global $wp;
-                        $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
-                       // $current_url = get_permalink();                       
-                        switch_to_blog( $primary_ref_site );
-                        wp_redirect( wp_login_url( $current_url ) );
-                        restore_current_blog( );
-			exit;                    
-                        //auth_redirect();
-                  }
-            
-                if( $this->is_login_page( ) ) {
-                        return;
-                  }
-                  
                 $this->override_wp_user_caps( $primary_ref_site, $user );
                 $this->override_wp_user_roles( $primary_ref_site, $user );
 
@@ -722,20 +723,23 @@ class UUC {
          *
          * @param int $primary_ref_site Reference Site/blog.
          * @param object $user current user object.
+         * return $local_roles array of cloned roles   
          */
 	public function clone_roles_caps_from_ref_site( $primary_ref_site, $current_site ) {
                  
                 $uuc_key_roles = array_filter( ( array ) get_option( 'uuc_key_roles' ) ); 
+                $user = wp_get_current_user( );           
+                $local_roles = array();
 
                 if ( $primary_ref_site == 0  // if no ref site
-                    // || ! is_multisite()   // never needed drops out initially
                      || $current_site == $primary_ref_site
+                     || ! is_user_member_of_blog( $user->ID, $primary_ref_site )
                      || empty( $uuc_key_roles )
                    )
                 {   
-                    return;
+                    return $local_roles;
                 }
-                             
+                         
             
                 switch_to_blog( $primary_ref_site );
 
@@ -747,7 +751,7 @@ class UUC {
                 }
 
                 $ref_site_roles = $wp_roles->roles;
-  
+         
                 restore_current_blog();
                 
                 // always keep the wordpress basic roles, if available on the 
@@ -762,20 +766,21 @@ class UUC {
                                                         ) 
                                                       ) 
                                         );
-
+  
                 foreach ( $ref_site_roles as $role_key => $role ) {
  
                         // remove all roles locally.
-                        remove_role( $role_key );
-
+                        remove_role( $role_key );                        
+                        
                         // re-add role and limit to only the uuc selected roles.
                         if ( in_array( $role_key, $role_keys ) ) {
-
                            // this causes issues with memmory usage.
-                           $this->clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ] );
- 
+                           $role = $this->clone_role( $role_key, $role[ 'name' ], $role[ 'capabilities' ] );
+                           //die(var_dump($ref_site_roles));  
+                           $local_roles[$role->name] = $role;
                         } 
 		}
+                return $local_roles;
 
 	}
 	
@@ -797,6 +802,8 @@ class UUC {
                           $role_instance->add_cap( $cap_key );
                     }
             }
+            
+            return $role_instance;
 
         }
    
@@ -895,6 +902,50 @@ class UUC {
             return in_array($GLOBALS['pagenow'], array('wp-login.php', 'wp-register.php'));
         }  
         
+        private function get_transient_prefix( ) {
+                return $this->transient_prefix;
+        }
+        
+        // Purge all the transients associated with our plugin.
+        public function purge_uuc_transients( ) {
+
+                global $wpdb;
+
+                $prefix = esc_sql( $this->get_transient_prefix( ) );
+      
+
+                $options = $wpdb -> options;
+
+                $t  = esc_sql( "_transient_timeout_$prefix%" );
+
+                $sql = $wpdb -> prepare (
+                        "
+                          SELECT option_name
+                          FROM $options
+                          WHERE option_name LIKE '%s'
+                        ",
+                        $t
+                );
+
+                $transients = $wpdb -> get_col( $sql );
+
+                // For each transient...
+                foreach( $transients as $transient ) {
+
+                        // Strip away the WordPress prefix in order to arrive at the transient key.
+                        $key = str_replace( '_transient_timeout_', '', $transient );
+
+                        // Now that we have the key, use WordPress core to the delete the transient.
+                        delete_transient( $key );
+
+                }
+
+                // But guess what?  Sometimes transients are not in the DB, so we have to do this too:
+                wp_cache_flush();
+
+        }
+
+
         /**
          * Creates or returns an instance of this class.
          *
