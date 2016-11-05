@@ -67,7 +67,7 @@ class UUC {
 		add_action( 'plugins_loaded', array( $this, 'includes' ), 3 );
 
 		// register upgrade routine
-		add_action( 'plugins_loaded', array( $this, 'upgrade_routine' ));               
+		add_action( 'init', array( $this, 'upgrade_routine' ), 1 );               
                 
 		// Attached to after_setup_theme. Loads the plugin installer CLASS after themes are set-up to stop duplication of the CLASS.
 		// this should remain the hook until TGM-Plugin-Activation version 2.4.0 has had time to roll out to the majority of themes and plugins.
@@ -247,8 +247,8 @@ class UUC {
                         // by "new line" also trim off white space
                         $uuc_caps =   array_map( 'trim',explode( "\r\n", trim( $old_caps_to_add ) ) );  
 
-                        add_option( 'uuc_key_caps' , array( $old_key_cap ) );
-                        add_option( 'uuc_key_cap_' . $old_key_cap, $uuc_caps ); 
+                        update_option( 'uuc_key_caps' , array( $old_key_cap ) );
+                        update_option( 'uuc_key_cap_' . $old_key_cap, $uuc_caps ); 
                         
                         
                         /*
@@ -286,7 +286,7 @@ class UUC {
 		// force timeout to be 15 mins initially 
 		add_option( 'uuc_delay_check', 15 );
 
-		flush_rewrite_rules();
+		//flush_rewrite_rules();
 	}
 
 	/**
