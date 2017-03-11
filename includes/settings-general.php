@@ -103,7 +103,15 @@ class UUC_General_Settings {
                                                                                            . 'site then set for a longer time delay.)', 'user-upgrade-capability' ),
                                                                        'type'          => 'field_default_option',
                                                                        'sanitize_callback' => "intval",
-                                                                       ),											
+                                                                       ),	
+                                                               array(
+                                                                       'name' 		=> 'uuc_private_site',
+                                                                       'std' 		=> true,
+                                                                       'label' 	=> __( 'Force Login', 'user-upgrade-capability' ),
+                                                                       'desc'		=> __( 'Use this setting to force users to login (True) making the site private. ', 'user-upgrade-capability' ),
+                                                                       'type'          => 'field_checkbox_option',
+                                                                       'sanitize_callback' => "boolval",
+                                                                       ),                                        
                                                            ),										
                             ),      
                             'uuc_plugin_extension' => array(

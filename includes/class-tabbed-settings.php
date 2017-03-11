@@ -39,6 +39,7 @@ if ( ! class_exists( 'Extendible_Tabbed_Settings' ) ) {
 				}
 			}
 		}
+		
 	}
 }
 
@@ -50,11 +51,11 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 	class Tabbed_Settings extends Extendible_Tabbed_Settings {
 
 		// the following are configurable externally
-                public $menu_access_capability = '';
-                public $menu_parent = '';
-                public $menu = '';
-                public $menu_title = '';
-                public $page_title = '';
+        public $menu_access_capability = '';
+        public $menu_parent = '';
+        public $menu = '';
+        public $menu_title = '';
+        public $page_title = '';
 		public $default_tab_key = '';
 
 		/**
@@ -100,7 +101,7 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		}
 
 		/**
-		 * perform an AND function on for the current user to have all capabilities listed within the Array
+         * perform an AND function on for the current user to have all capabilities listed within the Array
 		 *		 
 		 * @param array() of capabilities to perform an AND function on for the current user.
 		 * @return true is the current user can do all capabilities held within the array passed.
@@ -116,86 +117,87 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 				}
 			}
 			return $user_has_all_caps;
+			
 		}		
+		
+		
+        /**
+		 *		 
+         * Go through the tabbed_settings and limit based on current user capability.
+         *
+         * @param void
+         */
+        private function register_tabbed_settings( $settings ) {
+		
+			$this->settings = $settings;
+			
+			foreach ( $this->settings as $tab_name => $registered_setting_page ) {
+			
+				// remove form elements based on user capability
+				if ( ( array_key_exists( 'access_capability', $registered_setting_page ) ) && _
+					 ( ! $this->current_user_can_do_all( $registered_setting_page['access_capability'] ) ) ) {
+					 
+					// remove settings pages/tabs if user is lacking the 'access_capability'
+					unset( $this->settings[$tab_name] );
+					
+				} else {
+				
+					// now remove individual settings if user is lacking the 'access_capability'
+					foreach ( $this->settings[$tab_name]['settings'] as $settings_field_key => $settings_field_options ) {
 
+						if ( ( array_key_exists( 'access_capability', $settings_field_options ) ) && ( ! $this->current_user_can_do_all( $settings_field_options['access_capability'] ) ) ) {
+							unset( $this->settings[$tab_name]['settings'][$settings_field_key] );
+						}
+					}			
+				}
+			}
+				
+			// If the 'default_tab_key' no longer exists due to the access_capability removal of settings
+			if ( ! array_key_exists( 'default_tab_key', ( array ) $this->settings ) ) {
 
-                /**
-                         *		 
-                 * Go through the tabbed_settings and limit based on current user capability.
-                 *
-                 * @param void
-                 */
-                private function register_tabbed_settings( $settings ) {
+				$current_user_settings = array_filter( $this->settings );
+				
+				if ( ! empty( $current_user_settings ) ) {
+				
+					$first_key = key( $current_user_settings );
+				
+					$this->default_tab_key = $first_key;
+				}
+			}
+        }
 
-                                $this->settings = $settings;
+        /**
+         * Amend default configuration.  This function strips out the config array elements and stores them 
+         * as a variable within the current Class object $this->"config-element" will be the means to return the 
+         * current configuration stored.
+         *
+         * @param array $config Array of config options to pass as class properties.
+		 * @return - sets up the CLASS object values $this->config.
+         */
+        public function register_config( $config ) {
 
-                                foreach ( $this->settings as $tab_name => $registered_setting_page ) {
+            $keys = array( 
+						'default_tab_key',
+						'menu_parent',
+						'menu_access_capability',
+						'menu',
+						'menu_title',
+						'page_title',
+					);
 
-                                        // remove form elements based on user capability
-                                        if ( ( array_key_exists( 'access_capability', $registered_setting_page ) ) && _
-                                                 ( ! $this->current_user_can_do_all( $registered_setting_page['access_capability'] ) ) ) {
-
-                                                // remove settings pages/tabs if user is lacking the 'access_capability'
-                                                unset( $this->settings[$tab_name] );
-
-                                        } else {
-
-                                                // now remove individual settings if user is lacking the 'access_capability'
-                                                foreach ( $this->settings[$tab_name]['settings'] as $settings_field_key => $settings_field_options ) {
-
-                                                        if ( ( array_key_exists( 'access_capability', $settings_field_options ) ) && ( ! $this->current_user_can_do_all( $settings_field_options['access_capability'] ) ) ) {
-                                                                unset( $this->settings[$tab_name]['settings'][$settings_field_key] );
-                                                        }
-                                                }			
-                                        }
-                                }
-
-                                // If the 'default_tab_key' no longer exists due to the access_capability removal of settings
-                                if ( ! array_key_exists( 'default_tab_key', ( array ) $this->settings ) ) {
-
-                                        $current_user_settings = array_filter( $this->settings );
-
-                                        if ( ! empty( $current_user_settings ) ) {
-
-                                                $first_key = key( $current_user_settings );
-
-                                                $this->default_tab_key = $first_key;
-                                        }
-                                }
-                }
-
-                /**
-                 * Amend default configuration.  This function strips out the config array elements and stores them 
-                 * as a variable within the current Class object $this->"config-element" will be the means to return the 
-                 * current configuration stored.
-                 *
-                 * @param array $config Array of config options to pass as class properties.
-                 * @return - sets up the CLASS object values $this->config.
-                 */
-                public function register_config( $config ) {
-
-                    $keys = array( 
-                                        'default_tab_key',
-                                        'menu_parent',
-                                        'menu_access_capability',
-                                        'menu',
-                                        'menu_title',
-                                        'page_title',
-                                );
-
-                    foreach ( $keys as $key ) {
-                        if ( isset( $config[$key] ) ) {
-                            if ( is_array( $config[$key] ) ) {
-                                foreach ( $config[$key] as $subkey => $value ) {
-                                   $this->{$key}[$subkey] = $value;
-                                }
-                            } else {
-                                $this->$key = $config[$key];
-                            }
+            foreach ( $keys as $key ) {
+                if ( isset( $config[$key] ) ) {
+                    if ( is_array( $config[$key] ) ) {
+                        foreach ( $config[$key] as $subkey => $value ) {
+                           $this->{$key}[$subkey] = $value;
                         }
+                    } else {
+                        $this->$key = $config[$key];
                     }
                 }
-
+            }
+        }
+		
 		/**
 		 * render_setting_page function.
 		 *
@@ -248,8 +250,8 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			<div class="wrap">
 				<?php $this->plugin_options_tabs( ); ?>
 				<?php $this->get_form_action( $tab ); ?>		
-                                <?php do_settings_sections( $tab ); ?>
-                                <?php submit_button( ); ?>
+					<?php do_settings_sections( $tab ); ?>
+					<?php submit_button( ); ?>
 				</form>
 			</div>
 			<?php
@@ -273,13 +275,32 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 		/**
 		 * field_checkbox_option 
 		 *
-		 * @param array of arguments to pass the option name to render the form field.
+		 * @param
+                 *  'name'      =   option name
+                 *  'std'       =   default value to initialise the option to.                                                                           
+                 *  'value'     =   value to overwrite/force the setting to.
+                 *  'label'     =   left of the setting
+                 *  'desc'      =   for text under the setting.
+                 *  'type'      =   'field_checkbox_option'
+                 *  'cb_label'  =   right of the setting
+                 *  'disabled'  =   if true setting is disabled
+                 * 
 		 * @return void
 		 */
 		public function field_checkbox_option( array $args  ) {
-			$option   = $args['option'];
-			$value = get_option( $option['name'] );
-			?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" value="1" <?php checked( '1', $value ); ?> /> <?php echo $option['label']; ?></label><?php
+                    
+                        $defaults = array(
+                                        'value' => null,
+                                        'disabled' => false,
+                                      );
+
+                        $option = wp_parse_args( $args['option'], $defaults );
+
+                        // Take value if not null
+                        if( is_null( $value = $option['value'] ) ) {
+                            $value = get_option( $option['name'] );
+                        }
+                        ?><label><input id="setting-<?php echo esc_html( $option['name'] ); ?>" name="<?php echo esc_html( $option['name'] ); ?>" type="checkbox" <?php if( $option['disabled'] ) esc_html_e('disabled="disabled"' ); ?> value="1" <?php checked( '1', $value ); ?> /> <?php echo $option['cb_label']; ?></label><?php
 			if ( ! empty( $option['desc'] ) ) {
                             echo ' <p class="description">' .  $option['desc'] . '</p>';
                         }
@@ -303,18 +324,18 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			
 			?><label for="<?php echo $option['name']; ?>"><?php 
 			wp_dropdown_pages( array( 
-                                                'name' => $option['name'],
-                                                'id'         	=> 'setting-' . $option['name'],
-                                                'echo' => 1, 
-                                                'hierarchical'  => 0,
-                                                'sort_order'   	=> 'ASC',
-                                                'sort_column'  	=> 'post_title',
-                                                'show_option_none' => _x( "- None -", 'text for no page selected', 'user-upgrade-capability' ), 
-                                                'option_none_value' => '0', 
-                                                'selected' => get_option( $option['name'] ),
-                                                'post_status'  => $post_status,
-                                                ) 
-                                        ); ?>
+									'name' => $option['name'],
+									'id'         	=> 'setting-' . $option['name'],
+									'echo' => 1, 
+									'hierarchical'  => 0,
+									'sort_order'   	=> 'ASC',
+									'sort_column'  	=> 'post_title',
+									'show_option_none' => _x( "- None -", 'text for no page selected', 'user-upgrade-capability' ), 
+									'option_none_value' => '0', 
+									'selected' => get_option( $option['name'] ),
+                                                                        'post_status'  => $post_status,
+									) 
+								); ?>
 			</label>
 
 			
@@ -495,7 +516,7 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 
 		/**
 		 * Echos the correct form action ( <form action="XXXXX" )
-		 * if the standard options are to be saved in the database the following will be return:
+		 * if the standard options are to be save in the database the following will be return:
 		 *"options.php"
 		 *
 		 * if the admin_post_ hook is used to run code and do something special then the settings option ['form_action']
@@ -522,7 +543,7 @@ if ( ! class_exists( 'Tabbed_Settings' ) ) {
 			
 			if ( $form_action == "options.php" ) {
 				// handle the standard settings API nonce
-				settings_fields( $tab );
+					settings_fields( $tab );
 			} else {
 				// otherwise use an explicit nonce for using with wp_verify_nonce() authentication
 				wp_nonce_field( $tab, $tab . '_nonce' );

@@ -44,18 +44,39 @@ If you select the options for extending functionality through other plugins the 
 
 == Installation ==
 
-1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Goto the "Users" Menu and "Reference Site" sub menu.
-4. Defined the "Reference Site" to point back to the site that you will be using to define your user capabilities
-5. Once the Ref Site is defined you will see two new sub-menus under the "Users" Menu. (1) "Upgrade Roles" (2) "Upgrade Caps".  Under these two menus you will be able to set keys (role or capabilities).
-6. Each Key that you define will provide a new settings tab where you can select new access to the local site where the users have the key role/cap on the reference site.
+You can install it through the WordPress plugin repository “add plugins” automatic installer. So follow these steps..
+
+1. remove/delete the plugin folder you created manually (e.g. ../wp-content/plugins/user-upgrade-capability/
+2. Go to site dashboard ‘My Sites’ > ‘Network Admin’ > ‘Plugins’
+3. Click on the ‘Add New’ button
+4. search for ‘User upgrade capability’ and install
+5. Network Activate the plugin
+
+To Manually install follow these steps..
+
+1. [Download](https://wordpress.org/plugins/user-upgrade-capability/) the plugin.zip file 
+2. Go to site dashboard ‘My Sites’ > ‘Network Admin’ > ‘Plugins’
+3. Click on the ‘Add New’ button
+4. Click on the ‘Upload Plugin’ button
+5. follow instructions to upload the zip file and install
+6. Network Activate the plugin
+
+
+Once activated follow these steps on the site you which to use the plugin..
+
+1. Goto the "Users" Menu and "Reference Site" sub menu.
+2. Defined the "Reference Site" to point back to the site that you will be using to define your user capabilities
+3. Once the Ref Site is defined you will see two new sub-menus under the "Users" Menu. (1) "Upgrade Roles" (2) "Upgrade Caps".  Under these two menus you will be able to set keys (role or capabilities).
+4. Each Key that you define will provide a new settings tab where you can select new access to the local site where the users have the key role/cap on the reference site.
 
 For example if you simply want to add and new site and grant every subscriber on the primary reference site the same access to your new site.  
-- Then under the "Upgrade Roles" settings pages and the "Key Roles:" tab tick the "Subscriber" option save changes.
-- Select the new "subscriber" tab settings page.
-- Tick the "Subscriber" option and save changes.
-Now all subscribers on the primary reference site will automatically be given subscriber access to the local site.
+> Then under the "Upgrade Roles" settings pages and the "Key Roles:" tab tick the "Subscriber" option save changes.
+
+> Select the new "subscriber" tab settings page.
+
+> Tick the "Subscriber" option and save changes.
+
+> Now all subscribers on the primary reference site will automatically be given subscriber access to the local site.
 
 == Frequently Asked Questions ==
 

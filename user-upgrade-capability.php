@@ -3,10 +3,10 @@
 Plugin Name: User Upgrade Capability
 Plugin URI: http://justinandco.com/plugins/user-upgrade-capabilities/
 Description: Link multiple network sites/blogs together - Maintain only one site list of users.
+Text Domain: user-upgrade-capability
 Version: 2.0
 Author: Justin Fletcher
 Author URI: http://justinandco.com
-Domain Path: /languages
 License: GPLv2 or later
 Network: true
 */
@@ -162,8 +162,7 @@ class UUC {
 	
 	
 	/**
-	 * Initialise the plugin by handling upgrades and 
-         * loading the text domain. 
+	 * Initialise the plugin by handling upgrades
 	 *
 	 * @return void
 	 */
@@ -267,7 +266,6 @@ class UUC {
                         delete_option( 'uuc_join-my-multisite_plugin' );
                         delete_option( 'uuc_deactivate_join-my-multisite' );
                         
-
 		}
 		
 	}
@@ -533,7 +531,7 @@ class UUC {
                 
                 $site_transient_name =  $this->get_transient_prefix( ) . 'site_block_role_cap_alignment';
                 $transient_primary_site_roles = get_transient( $site_transient_name );
-//$transient_primary_site_roles = false;
+
                 // drop out is transient still present
                 if( ! empty( $transient_primary_site_roles ) ) {
                         // The function will return here every time after 
@@ -574,37 +572,37 @@ class UUC {
                     return;
                 }
                 
-// try this switch to primary (it follows the core method)     
-                /*
-                $primary_ref_site = get_option( 'uuc_reference_site' );                 
-            	switch_to_blog( $primary_ref_site );
-                global $current_user;
-                $user = get_userdata( $current_user->ID );
-                restore_current_blog( );
-                 */
-                
-//die(var_dump($user))  ;  
-            
                 $user = wp_get_current_user( );
-       
-                if( ! $user->exists( ) ) {
-                        global $wp;
-                        $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
-                        switch_to_blog( $primary_ref_site );
-                        wp_redirect( wp_login_url( $current_url ) );
-                        restore_current_blog( );
-			exit;                
-                  }
+                
+                // create a uuc_private_site transient for speed benefits.  Transient is
+                // deleted on settings update
+                if ( false === ( $private_site = get_transient( $this->get_transient_prefix( ) . 'private_site' ) ) ) {
+                    // It wasn't there, so regenerate the data and save the transient
+                    $private_site = get_option( 'uuc_private_site' ); 
+                    set_transient( 'uuc_private_site', $private_site, 0 );
+                }
             
-              //  if( $this->is_login_page( ) ) {
-              //          return;
-              //    }
-                  
+       
+                if( ! $user->exists( ) && $private_site ) {
+                    global $wp;
+                    $current_url = add_query_arg( $wp->query_string, '', home_url( $wp->request ) );
+                    switch_to_blog( $primary_ref_site );
+                    wp_redirect( wp_login_url( $current_url ) );
+                    restore_current_blog( );
+                    exit;                
+                  }
+
+                // drop out if the site is available to the public
+                if( ! $private_site ) {
+                    // drop out and do nothing
+                    return;              
+                  }
+
                   
                 $user_transient_name = $this->get_transient_prefix( ) . 'user_' . $user->ID . '_block_override';
                 $transient = get_transient( $user_transient_name );
-//$transient = false;
-                // drop out here until the transient expires
+
+                // drop out here until the transient has not expired
                 if( ! empty( $transient ) ) {
                         return ;
                 }                
@@ -626,7 +624,6 @@ class UUC {
         
         /*
          * override local user capabilities.
-         * Returns true if a match was found.
          *
          * @param int $primary_ref_site Reference Site/blog.
          * @param object $user current user object.
@@ -654,7 +651,7 @@ class UUC {
                 // Get rid of any bogus roles keys
                 $uuc_key_caps = array_filter( ( array ) get_option( 'uuc_key_caps' ) );
  
-                // collect the user roles uuc is to add to the local site
+                // collect the user capabilities that uuc is to add to the local site
                 $new_caps = array( );
 
                 foreach( $uuc_key_caps as $key_cap ) {
@@ -678,7 +675,7 @@ class UUC {
 
                 }                
 
-                //Filter out caps that are role names and assign remainder to $caps_to_remove
+                // Filter out caps that are role names and assign remainder to $caps_to_remove
                 $wp_roles = wp_roles();
                 $caps_to_remove = array_diff( $user_caps, $new_caps );
                 $roles_in_cap_array = array_filter( $caps_to_remove, array( $wp_roles, 'is_role' ) );
@@ -692,7 +689,6 @@ class UUC {
 		
         /**
          * override local user roles.
-         * Returns true if a match was found.
          *
          * @param int $primary_ref_site Reference Site/blog.
          * @param object $user current user object.
@@ -711,7 +707,7 @@ class UUC {
                 // Get rid of any bogus roles
                 $uuc_key_roles = array_filter( ( array ) get_option( 'uuc_key_roles' ) );
  
-                // collect the user roles uuc is to add to the local site
+                // collect the user roles that uuc is to add to the local site
                 $new_roles = array( );
 
                 foreach( $uuc_key_roles as $role ) {
@@ -747,7 +743,6 @@ class UUC {
 
         /**
          * override local user roles.
-         * Returns true if a match was found.
          *
          * @param int $primary_ref_site Reference Site/blog.
          * @param object $user current user object.
@@ -941,10 +936,10 @@ class UUC {
 
                 $prefix = esc_sql( $this->get_transient_prefix( ) );
       
-
                 $options = $wpdb -> options;
 
-                $t  = esc_sql( "_transient_timeout_$prefix%" );
+                //$t  = esc_sql( "_transient_timeout_$prefix%" );
+                $t  = esc_sql( "_transient_$prefix%" );
 
                 $sql = $wpdb -> prepare (
                         "
@@ -956,18 +951,17 @@ class UUC {
                 );
 
                 $transients = $wpdb -> get_col( $sql );
-
+    
                 // For each transient...
                 foreach( $transients as $transient ) {
 
                         // Strip away the WordPress prefix in order to arrive at the transient key.
-                        $key = str_replace( '_transient_timeout_', '', $transient );
+                        $key = str_replace( '_transient_', '', $transient );
 
                         // Now that we have the key, use WordPress core to the delete the transient.
                         delete_transient( $key );
-
                 }
-
+                
                 // But guess what?  Sometimes transients are not in the DB, so we have to do this too:
                 wp_cache_flush();
 

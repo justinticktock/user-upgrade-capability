@@ -6,7 +6,7 @@ if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
 	
 if ( is_multisite( ) ) {
 
-    $blogs = wp_list_pluck( wp_get_sites(), 'blog_id' );
+    $blogs = wp_list_pluck( get_sites(), 'blog_id' );
 
     if ( $blogs ) {
         foreach( $blogs as $blog ) {		
